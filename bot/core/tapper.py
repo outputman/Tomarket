@@ -279,11 +279,6 @@ class Tapper:
 
                 if settings.AUTO_FARM:
                     if time() > end_farming_dt:
-                        if settings.USE_RANDOM_DELAY_IN_FARM:
-                            random_delay = randint(settings.RANDOM_DELAY_IN_FARM[0], settings.RANDOM_DELAY_IN_FARM[1])
-                            logger.info(f"{self.session_name} | Bot will farm in <light-red>{random_delay}s</light-red>")
-                            await asyncio.sleep(delay=random_delay)
-                            
                         claim_farming = await self.claim_farming(http_client=http_client)
                         if claim_farming and 'status' in claim_farming:
                             if claim_farming.get('status') == 500:
@@ -471,6 +466,11 @@ class Tapper:
                                 f"{self.session_name} | Rank not upgraded. Reason: {upgrade_rank.get('message', 'Unknown error')} 🍅")
 
                 sleep_time = end_farming_dt - time()
+                
+                if settings.USE_RANDOM_DELAY_IN_FARM:
+                    random_delay = randint(settings.RANDOM_DELAY_IN_FARM[0], settings.RANDOM_DELAY_IN_FARM[1])
+                    sleep_time += random_delay
+                            
                 logger.info(f'{self.session_name} | Sleep <light-red>{round(sleep_time / 60, 2)}m.</light-red>')
                 await asyncio.sleep(sleep_time)
                 await http_client.close()
